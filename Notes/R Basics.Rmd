@@ -8,21 +8,75 @@ The assignment operator is <-. Think of assignment as the verb “gets”, readi
 
 ls() displays the names of objects in your workspace
 
+rm() removes, permanently, one or more objects from the workspace
 
 ```{r}
+c("My", "name", "is", "AK")
+c(TRUE, TRUE, FALSE, TRUE)
 my_numbers<-c(1,2,3,1,3,5,25)
+my_numbers2 <- log(my_numbers+1)
 my_numbers
 mean(my_numbers)
 median(my_numbers)
 summary(my_numbers)
-#standard deviation
-sd(my_numbers)
+sd(my_numbers)#standard deviation
+var(my_numbers)#variance
+cor(my_numbers, my_numbers2)#correlation
+cov(my_numbers, my_numbers2)#covariance
+x <- c(0, 1, 1, 2, 3, NA)#ignore NA values
+sd(x, na.rm = TRUE)
 #simple operations
 my_numTimes5 <- my_numbers*5
 rm(my_numTimes5)
 my_numbers+1
 my_numPower3 <- my_numbers*my_numbers*my_numbers
 my_numPower3
+#rm(list = ls())
+```
+Sequences
+seq()
+rep()
+```{r}
+1:10
+seq(from = 0, to = 20)
+seq(from = 0, to = 20, by = 5)
+seq(from = 0, to = 20, length.out = 5)#Vector with length 5 so increments accordingly
+rep(5, times = 5)
+```
+Comparison operators and Boolean values
+```{r}
+v <- c(3, pi, 4)
+w <- c(pi, pi, pi)
+v == w # Compare two 3-element vectors
+v != w
+v < w
+v <= w
+v > w
+v >= w
+any(v == pi) # Return TRUE if any element of v equals pi
+all(v == 0) # Return TRUE if all elements of v are zero
+rm(list = ls())
+```
+Indexing
+First element starts at 1 and not 0
+```{r}
+fib <- c(0, 1, 1, 2, 3, 5, 8, 13, 21, 34)
+fib[1]
+fib[2]
+fib[1:3]
+fib[c(1, 2, 4, 8)]#Select elements anywhere within the data vector
+fib[-1] # Ignore first element
+fib < 10 # This vector is TRUE wherever fib is less than 10
+fib[fib < 10] # Use that vector to select elements less than 10
+v <- c(3, 6, 1, 9, 11, 16, 0, 3, 1, 45, 2, 8, 9, 6, -4)
+v[ (v < quantile(v, 0.05)) | (v > quantile(v, 0.95)) ]#All elements in the lower and upper 5%
+v <- c(1, 2, 3, 4, 5)
+v[v%%2==0]#Select all elements that are even
+v <- c(1, 2, 3, NA, 5)
+v[!is.na(v) & !is.null(v)]#Select all elements that are neither NA nor NULL
+years <- c(1960, 1964, 1976, 1994)
+names(years) <- c("Kennedy", "Johnson", "Carter", "Clinton")
+years
 rm(list = ls())
 ```
 Reading csv
@@ -30,6 +84,6 @@ Reading csv
 library(tidyverse)
 url <- "https://cdn.rawgit.com/kjhealy/viz-organdata/master/organdonation.csv"
 organs <- read_csv(file = url)
-
+rm(list = ls())
 ```
 Plotting Data
