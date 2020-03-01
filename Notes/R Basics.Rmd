@@ -1,0 +1,35 @@
+---
+title: "R Basics"
+output: html_notebook
+---
+c() is a function. It’s short for “combine” or “concatenate”. It will take a sequence of comma-separated things inside the parentheses and join them together into a vector where each element is still individually accessible.
+
+The assignment operator is <-. Think of assignment as the verb “gets”, reading left to right. Shortcut: Alt+minus
+
+ls() displays the names of objects in your workspace
+
+
+```{r}
+my_numbers<-c(1,2,3,1,3,5,25)
+my_numbers
+mean(my_numbers)
+median(my_numbers)
+summary(my_numbers)
+#standard deviation
+sd(my_numbers)
+#simple operations
+my_numTimes5 <- my_numbers*5
+rm(my_numTimes5)
+my_numbers+1
+my_numPower3 <- my_numbers*my_numbers*my_numbers
+my_numPower3
+rm(list = ls())
+```
+Reading csv
+```{r}
+library(tidyverse)
+url <- "https://cdn.rawgit.com/kjhealy/viz-organdata/master/organdonation.csv"
+organs <- read_csv(file = url)
+
+```
+Plotting Data
