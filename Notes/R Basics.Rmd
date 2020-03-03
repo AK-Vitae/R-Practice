@@ -86,4 +86,26 @@ url <- "https://cdn.rawgit.com/kjhealy/viz-organdata/master/organdonation.csv"
 organs <- read_csv(file = url)
 rm(list = ls())
 ```
-Plotting Data
+Data Visualization
+ggplot()
+**Build plots layer by layer
+1. Data and Mapping
+2. Choose geom
+3. Add layers on geom as needed
+4. Organize the display aspects of the data
+Basic:
+ggplot(data = ..., mapping = aes (x = ..., y...))
+data tells ggplot where to find the variables to use
+thelibrary::function to grab a function without loading in the library
+```{r}
+library(gapminder)
+#1
+p <- ggplot(data = gapminder,mapping = aes(x = gdpPercap,y = lifeExp))
+#2
+p+geom_point()#scatterplot
+#3
+p+geom_smooth()#calculated a smoothed line for us and shaded in a ribbon showing the standard error for the line
+p+geom_point()+geom_smooth(method = "lm")#lm stands for linear model
+p+geom_point()+geom_smooth(method = "gam")+scale_x_log10()#scale_x_log10() scales the x-axis of a plot to a log 10 basis
+p + geom_point(alpha = 0.3) + geom_smooth(method = "gam") + scale_x_log10(labels = scales::dollar) + labs(x = "GDP Per Capita", y = "Life Expectancy in Years",title = "Economic Growth and Life Expectancy",subtitle = "Data points are country-years",caption = "Source: Gapminder.")
+```
