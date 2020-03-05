@@ -11,8 +11,9 @@ ls() displays the names of objects in your workspace
 rm() removes, permanently, one or more objects from the workspace
 
 ```{r}
-c("My", "name", "is", "AK")
-c(TRUE, TRUE, FALSE, TRUE)
+c(1,2,5.3,6,-2,4)#numeric vector
+c("My", "name", "is", "AK")#characte vector
+c(TRUE, TRUE, FALSE, TRUE)#logical vector
 my_numbers<-c(1,2,3,1,3,5,25)
 my_numbers2 <- log(my_numbers+1)
 my_numbers
@@ -34,14 +35,15 @@ my_numPower3
 #rm(list = ls())
 ```
 Sequences
-seq()
-rep()
+seq(): function for sequences with an increment other than 1
+rep(): function to create a series of repeated value
 ```{r}
 1:10
 seq(from = 0, to = 20)
 seq(from = 0, to = 20, by = 5)
 seq(from = 0, to = 20, length.out = 5)#Vector with length 5 so increments accordingly
 rep(5, times = 5)
+i <- matrix(1:20, nrow = 5, ncol = 4)
 ```
 Comparison operators and Boolean values
 ```{r}
@@ -62,6 +64,7 @@ First element starts at 1 and not 0
 ```{r}
 fib <- c(0, 1, 1, 2, 3, 5, 8, 13, 21, 34)
 fib[1]
+fib[c(1)]
 fib[2]
 fib[1:3]
 fib[c(1, 2, 4, 8)]#Select elements anywhere within the data vector
@@ -86,8 +89,46 @@ url <- "https://cdn.rawgit.com/kjhealy/viz-organdata/master/organdonation.csv"
 organs <- read_csv(file = url)
 rm(list = ls())
 ```
-Data Visualization
-ggplot()
+Data Visualization: Simple plots
+```{r}
+# Dataframes - Main idea is that each value can be of differnt modes(numeric, character, factor ,.etc)
+j <- c(1,2,3,4)
+k <- c("red", "white", "red", NA)
+l <- c(TRUE,TRUE,TRUE,FALSE)
+mydata <- data.frame(j,k,l)
+names(mydata) <- c("ID","Color","Passed") # assigning column names
+dim(mydata)#returns dimensions of object
+head(mydata, n=10)#first 10 rows
+tail(mydata, n=5) #last 10 rows
+#Ordering: order(mydata$category)
+#x <- mydata[order(mydata$category),mydata$category2]
+#MERGE: merge(dataframeA,dataframeB,by="something"), cbind(), rbind()
+library(readr)
+automobiles <- read_csv("C:/Users/akshi/Desktop/automobiles.csv")
+# Structure of the object/dataset
+str(automobiles)
+# Length of the object/dataset
+length(automobiles)
+# Class of the object/dataset - High level
+class(automobiles)
+# Type of the object/dataset - Low-level
+typeof(automobiles)
+# Name of the object/dataset
+names(automobiles)
+# Histogram plot - Used to see the distribution (Continuous data)
+#hist()
+# Box plot - To show the distribution of data (Min, First Quartile, Median, Third Quartile, Max)
+#boxplot()
+# Bar Plot - Used to compare variables (For categorical data)
+#table() #need to make table of data first
+#barplot(table())
+# Mosaic Plot - Represents a contingency table (Distribution of two variables against each other) 
+# [Box size represents the cell frequencies]
+#mosaicplot()
+#Customize features of graphs by modifying parameters
+#par()
+```
+Data Visualization: ggplot()
 **Build plots layer by layer**
 1. Data and Mapping
 2. Choose geom
