@@ -1,0 +1,61 @@
+---
+title: "Citi Bike Hypothesis Testing"
+output: html_notebook
+---
+50KJan20NYCCitybike.csv contains a sample of 50K trips taken using Citybike, the NYC bike sharing system. Details on the data columns can be found here: https://www.citibikenyc.com/system-data
+
+```{r}
+library(geosphere)
+library(dplyr)
+bike <- read.csv("C:/Users/ak/Desktop/50KJan20NYCCitybike.csv")
+View(bike)
+```
+Hypothesis 1: 
+  NULL Hypothesis: People born in and after 1980 will have the same trip duration as people born before 1980.
+  Reject the NULL Hypothesis (My Hypothesis): People born after 1980 will have higher trip durations than people born before 1980.
+  
+  Z-score of two samples to find resultant p-value
+```{r}
+pre1980<-filter(bike, birth.year<1980)
+post1980<-filter(bike, birth.year>=1980)
+num.pre1980<-length(pre1980$tripduration)
+num.post1980<-length(post1980$tripduration)
+mean.pre1980<-mean(pre1980$tripduration)
+mean.post1980<-mean(post1980$tripduration)
+sd.pre1980<-sd(pre1980$tripduration)
+sd.post1980<-sd(post1980$tripduration)
+sd.pre1980.post1980<-sqrt(sd.pre1980^2/num.pre1980 + sd.post1980^2/num.post1980)
+z.score<-(mean.pre1980-mean.post1980)/sd.pre1980.post1980
+z.score
+plot(x=seq(from = -5, to= 5, by=0.1),y=dnorm(seq(from = -5, to= 5,  by=0.1),mean=0),type='l',xlab = 'mean difference',  ylab='possibility')
+abline(v=z.score, col='red')
+p<-1-pnorm(z.score)
+p
+#p = 27.43%, we cannot reject the NULL hypothesis. There is NOT enough statistical evidence to indicate that People born after 1980 will have higher trip durations than people born before 1980.
+```
+Hypothesis 2:
+  NULL Hypothesis: Customers and Subscribers will have same trip distances
+  Reject the NULL Hypothesis (My Hypothesis): Customers will have larger trip distances than Subscribers.
+
+Z-score of two samples to find resultant p-value
+```{r}
+cust<-filter(bike,usertype=="Customer")
+sub<-filter(bike,usertype=="Subscriber")
+dist.cust<-distHaversine(cbind(cust$start.station.latitude,cust$start.station.longitude),cbind(cust$end.station.latitude,cust$end.station.longitude))
+dist.sub<-distHaversine(cbind(sub$start.station.latitude,sub$start.station.longitude),cbind(sub$end.station.latitude,sub$end.station.longitude))
+mean.dist.cust<-mean(dist.cust)
+sd.dist.cust<-sd(dist.cust)
+num.dist.cust<-length(dist.cust)
+mean.dist.sub<-mean(dist.sub)
+sd.dist.sub<-sd(dist.sub)
+num.dist.sub<-length(dist.sub)
+sd.dist.cust.sub<-sqrt(sd.dist.cust^2/num.dist.cust + sd.dist.sub^2/num.dist.sub)
+z.score<-(mean.dist.cust-mean.dist.sub)/sd.dist.cust.sub
+z.score
+plot(x=seq(from = -5, to= 5, by=0.1),y=dnorm(seq(from = -5, to= 5,  by=0.1),mean=0),type='l',xlab = 'mean difference',  ylab='possibility')
+abline(v=z.score, col='red')
+p<-1-pnorm(z.score)
+p
+#p = 0, we can reject the NULL hypothesis. There is great statistical evidence to indicate that Customers have longer trip distances than subscribers. 
+```
+

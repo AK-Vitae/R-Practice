@@ -1,0 +1,30 @@
+---
+title: "Cost of Living and other Expenditure Indices by Cities"
+output: html_notebook
+---
+csv loaded from desktop.
+2018 Collection of global cost of living and other expenditure indices relative to New York City (value of 100). 
+If a city has a Cost of Living Index of 120, for example, it means that is estimated to be 20% more expensive than New York City.
+For each mentioned city there is a corresponding index involving Cost of living excluding rent, rent, cost of living plus rent, groceries, restaurant prices, and local purchasing power.
+```{r}
+library(tidyverse)
+col <- read.csv("C:/Users/ak/Desktop/Cost_of_living_index.csv")
+View(col)
+```
+Restaurant Price Index vs Groceries Index
+```{r}
+p<-ggplot(data=col[1:50,])+geom_point(mapping = aes(x=Groceries.Index,y=Restaurant.Price.Index,color=Country))
+p+ggtitle("Restaurant Price Index vs Groceries Index (Top 50 Cost of Living Entries)")+xlab("Groceries Index")+ylab("Restaurant Price Index")+ theme(plot.title = element_text(hjust = 0.5))
+```
+Top cost of living instances organized by countries
+```{r}
+p2<-ggplot(data= col[1:50,], aes(x=Country))+ geom_bar(fill="coral")+ geom_text(stat='count', aes(label=..count..), vjust=-1)
+p2+ggtitle("Top 50 Cost of Living Entries by Country Occurence")+xlab("Country")+ylab("Count")+ theme(plot.title = element_text(hjust = 0.5))
+newdata<-col[order(col$Country),]
+```
+Cost of living index of Australia's largest cities
+```{r}
+p3<-ggplot(newdata[5:14,],aes(x=City,y=Cost.of.Living.Index))+geom_bar(stat='identity',fill="tan3")+geom_text(stat='identity', aes(label=Cost.of.Living.Index), vjust=-1)
+p3+ggtitle("Cost of Living Index of Australia's Largest Cities")+xlab("City")+ylab("Cost of Living Index")+ theme(plot.title = element_text(hjust = 0.5))
+```
+

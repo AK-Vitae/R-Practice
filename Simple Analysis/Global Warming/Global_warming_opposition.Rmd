@@ -1,0 +1,130 @@
+---
+title: "Global Warming"
+output: html_notebook
+---
+historic_temp.csv contains temperature measurements from 1858 to 2005 from various weather stations around the world. Data contains avg, max, and min, temp recorded monthly by the stations. Data comes from different original sources and has some missing data (and of course, much fewer measurements in the 19th century than in the 20th and 21st).
+
+This analysis is to support the stance that Global Warming is Not Real (Devil's Advocate)
+
+```{r}
+library(tidyverse)
+library(dplyr)
+```
+NULL Hypothesis (My Hypothesis): Average temperatures in Las Vegas from 1973-2005 are similar to temperatures from 1939-1972
+
+Reject the NULL Hypothesis: Average temperatures in Las Vegas from 1973-2005 are greater than temperatures from 1939-1972
+```{r}
+#Null Hypothesis: Average temperatures in Las Vegas from 1939-1972 are similar to temperatures from 1973-2005
+temp <- read.csv("C:/Users/ak/Desktop/historic_temp.csv")
+#Remove first 2 columns
+temp$X.1 <- NULL
+temp$X <- NULL
+#Order the data by station id, year, and month
+tempOrdered <- temp[order(temp$Station.id,temp$Year,temp$Month),]
+#Remove the rows that have a NA/NULL average celsius temperatures values
+tempComplete <- tempOrdered[complete.cases(tempOrdered[,5]),]
+#Data pertaining to the Las Vegas Station
+tempLV <- filter(tempComplete, Station.id==30918)
+#Create a column which indicates, using 1 and 0, if a year is before 1973 or not
+tempLV$Pre1973 <- as.numeric(tempLV$Year < 1973)
+#Permutation function
+Permute_samples <- function(p,df,X){
+  p<-sample(p,length(p),FALSE)
+  in_sample_mean <- mean(df[p==1,X])
+  out_sample_mean <- mean(df[p==0,X])
+  return(in_sample_mean - out_sample_mean)
+}
+Permutation <- function(n,df1,c1,c2,w1,w2=NA,tail=1){
+  #df1 is the source data frame
+  #c1 is the column used for identifying the different groups
+  #w1 and w2 are the two groups to compare
+  #c2 is the column with the observed data
+  #n is the number of samples
+  #tail = 1 if we are using a one tailed test, =2 for a two tailed test (testing the effect one-way or two-way)
+  df <- as.data.frame(df1)
+  D_null<-c()
+  V1<-df[,c1]
+  V2<-df[,c2]
+  sub.value1 <- df[df[, c1] == w1, c2]
+  
+  m <- length(V1[V1==w1])
+  if(!is.na(w2)){
+    l <-length(V1[V1==w2])
+    sub.value2 <- df[df[, c1] == w2, c2]
+    df <- df[(df[, c1] == w1)|(df[, c1] == w2),]
+  }
+  else{
+    l <-length(V1)-m
+    sub.value2 <- df[df[, c1] != w1, c2]
+  }
+  if(tail==1){
+    D_hyp <-  mean(sub.value1, na.rm=TRUE) - mean(sub.value2, na.rm=TRUE)
+  }
+  else{
+    if(tail!=2){print("ERROR, tail should be 1 or 2")+return(NA)}
+    D_hyp <-  abs(mean(sub.value1, na.rm=TRUE) - mean(sub.value2, na.rm=TRUE))
+  }
+  permutation_sample <- rep(0,m+l)
+  permutation_sample[0:m]<-1
+  D_null<- replicate(n,Permute_samples(permutation_sample,df,c2))
+  
+  myhist<-hist(D_null,100, prob=TRUE)
+  multiplier <- myhist$counts / myhist$density
+  mydensity <- density(D_null, adjust=2)
+  mydensity$y <- mydensity$y * multiplier[1]
+  plot(myhist)
+  lines(mydensity, col='blue')
+  abline(v=D_hyp, col='red')
+  if(tail==1){
+    M<-mean(D_null>D_hyp) #estimate the one-tailed p-value by counting how many times the permuted samples have a higher difference than our hypothesis
+  }
+  else{
+    M<-mean(abs(D_null)>abs(D_hyp)) #estimate the one-tailed p-value by counting how many times the permuted samples have a higher absolute difference than our hypothesis
+  }
+  return(M)
+}
+Permutation(10000,tempLV,"Pre1973","AverageCelsiusTemperature",1,0)
+#Remove all variables
+rm(list = ls())
+#Using the Permutation test/function, the resultant p-value was 0.8574
+#P = 85.74%, we cannot reject the NULL hypothesis. There is NOT enough statistical evidence to indicate that Average temperatures in Las Vegas from 1973-2005 are greater than temperatures from 1939-1972
+```
+NULL Hypothesis (My Hypothesis): Average temperatures in San Antonio from 1973-2005 are similar to temperatures from 1939-1972
+
+Reject the NULL Hypothesis: Average temperatures in San Antonio from 1973-2005 are greater than temperatures from 1939-1972
+```{r}
+#NULL Hypothesis: Average temperatures in San Antonio from 1939-1972 are similar to temperatures from 1973-2005
+temp <- read.csv("C:/Users/ak/Desktop/historic_temp.csv")
+#Remove first 2 columns
+temp$X.1 <- NULL
+temp$X <- NULL
+#Order the data by station id, year, and month
+tempOrdered <- temp[order(temp$Station.id,temp$Year,temp$Month),]
+#Remove the rows that have a NA/NULL average celsius temperatures, latitude, and longitude values
+tempComplete <- tempOrdered[complete.cases(tempOrdered[,5]),]
+tempComplete <- tempComplete[complete.cases(tempComplete[,7:8]),]
+#Get data that pertains only to the Tropics Climate Zone
+tempTropics <- filter(tempComplete, Latitude>=-30&Latitude<=30)
+#Get data that refers only to San Antonio's Station Id
+tempSA <- filter(tempTropics,Station.id==26361)
+pre1973 <- filter(tempSA,Year<1973)
+post1973 <- filter(tempSA,Year>=1973)
+#Z-score Calculations
+num.pre1973<-length(pre1973$AverageCelsiusTemperature)
+num.post1973<-length(post1973$AverageCelsiusTemperature)
+mean.pre1973<-mean(pre1973$AverageCelsiusTemperature)
+mean.post1973<-mean(post1973$AverageCelsiusTemperature)
+sd.pre1973<-sd(pre1973$AverageCelsiusTemperature)
+sd.post1973<-sd(post1973$AverageCelsiusTemperature)
+sd.pre1973.post1973<-sqrt(sd.pre1973^2/num.pre1973 + sd.post1973^2/num.post1973)
+z.score<-(mean.pre1973-mean.post1973)/sd.pre1973.post1973
+z.score
+plot(x=seq(from = -5, to= 5, by=0.1),y=dnorm(seq(from = -5, to= 5,  by=0.1),mean=0),type='l',xlab = 'mean difference',  ylab='possibility')
+abline(v=z.score, col='red')
+p<-1-pnorm(z.score)
+p
+#Remove all variables
+rm(list = ls())
+#Using the formula to calculate the Z-score of two samples, the the resultant p-value was 0.7890042
+#p = 78.90%, we cannot reject the NULL hypothesis. There is NOT enough statistical evidence to indicate that Average temperatures in San Antonio from 1973-2005 are greater than temperatures from 1939-1972
+```
