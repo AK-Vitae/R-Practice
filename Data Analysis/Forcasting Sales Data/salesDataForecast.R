@@ -40,3 +40,79 @@ sales_data$weekdays = as.factor(sales_data$weekdays)
 # sales_data$shop_id = as.factor(sales_data$shop_id)
 # sales_data$item_id =  as.factor(sales_data$item_id)
 sales_data$item_category_id =  as.factor(sales_data$item_category_id)
+
+### EDA ####
+# sales shop wise
+sales_shopwise = sales_data %>%
+  select(shop_id, item_cnt_day) %>%
+  group_by(shop_id) %>%
+  summarise(item_cnt_day =  sum(item_cnt_day, na.rm = T))
+
+ggplot(data =  sales_shopwise, 
+       mapping = aes(x = reorder(shop_id, item_cnt_day), 
+                     y = item_cnt_day, 
+                     fill = factor(shop_id))) +
+  geom_histogram(stat = "identity", color = "yellow") +
+  # coord_flip() +
+  xlab("Shop ID") + ylab("Sales Count")+
+  # geom_label(stat = "identity",position = position_dodge(width = 1),hjust = "center", aes(label = item_cnt_day)) +
+  ggtitle(label = "Shop wise sales") +
+  theme(
+    # get rid of panel grids
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_line(colour = "gray",linetype = "dotted"),
+    # Change plot and panel background
+    plot.background=element_rect(fill = "black"),
+    panel.background = element_rect(fill = 'black'),
+    # Change legend 
+    # legend.position = c(0.6, 0.07),
+    # legend.direction = "horizontal",
+    legend.background = element_rect(fill = "black", color = NA),
+    legend.key = element_rect(color = "gray", fill = "black"),
+    legend.title = element_text(color = "white"),
+    legend.text = element_text(color = "white"),
+    # align title to top center, top ledt is by default.
+    plot.title = element_text(color = "white", hjust = 0.5, face = "bold"),
+    # axis ticks to bold black
+    axis.text=element_text(colour = "yellow",face = "bold"),
+    axis.title.x = element_text(color = "white"),
+    axis.title.y = element_text(color = "white")
+  ) 
+
+
+
+# sales item category wise
+sales_categorywise = sales_data %>%
+  select(item_category_id, item_cnt_day) %>%
+  group_by(item_category_id) %>%
+  summarise(item_cnt_day =  sum(item_cnt_day, na.rm = T))
+
+ggplot(data =  sales_categorywise, 
+       mapping = aes(x = reorder(item_category_id,item_cnt_day), 
+                     y = item_cnt_day,
+                     fill = factor(item_category_id))) +
+  geom_histogram(stat = "identity", color = "yellow") +
+  # coord_flip() +
+  xlab("Item Category") + ylab("Sales Count") +
+  ggtitle("Sale Item Category wise")+
+  theme(
+    # get rid of panel grids
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_line(colour = "gray",linetype = "dotted"),
+    # Change plot and panel background
+    plot.background=element_rect(fill = "black"),
+    panel.background = element_rect(fill = 'black'),
+    # Change legend 
+    # legend.position = c(0.6, 0.07),
+    # legend.direction = "horizontal",
+    legend.background = element_rect(fill = "black", color = NA),
+    legend.key = element_rect(color = "gray", fill = "black"),
+    legend.title = element_text(color = "white"),
+    legend.text = element_text(color = "white"),
+    # align title to top center, top ledt is by default.
+    plot.title = element_text(color = "white", hjust = 0.5, face = "bold"),
+    # axis ticks to bold black
+    axis.text=element_text(colour = "yellow",face = "bold"),
+    axis.title.x = element_text(color = "white"),
+    axis.title.y = element_text(color = "white")
+  ) 
