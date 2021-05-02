@@ -116,3 +116,77 @@ ggplot(data =  sales_categorywise,
     axis.title.x = element_text(color = "white"),
     axis.title.y = element_text(color = "white")
   ) 
+
+# most items in shop
+
+items_in_shop = sales_data %>%
+  select(shop_id, item_id) %>%
+  group_by(shop_id) %>%
+  summarise(item_id = n_distinct(item_id))
+
+ggplot(data = items_in_shop,
+       mapping = aes(x = reorder(shop_id,item_id),
+                     y = item_id,
+                     fill = factor(shop_id)))+
+  geom_histogram(stat = "identity", color = "yellow") +
+  xlab(" Shop ID")+ ylab(" Items in shop")+
+  ggtitle("Most Items in Shops") +
+  coord_flip()+
+  theme(
+    # get rid of panel grids
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_line(colour = "gray",linetype = "dotted"),
+    # Change plot and panel background
+    plot.background=element_rect(fill = "black"),
+    panel.background = element_rect(fill = 'black'),
+    # Change legend 
+    # legend.position = c(0.6, 0.07),
+    # legend.direction = "horizontal",
+    legend.background = element_rect(fill = "black", color = NA),
+    legend.key = element_rect(color = "gray", fill = "black"),
+    legend.title = element_text(color = "white"),
+    legend.text = element_text(color = "white"),
+    # align title to top center, top ledt is by default.
+    plot.title = element_text(color = "white", hjust = 0.5, face = "bold"),
+    # axis ticks to bold black
+    axis.text=element_text(colour = "yellow",face = "bold"),
+    axis.title.x = element_text(color = "white"),
+    axis.title.y = element_text(color = "white")
+  ) 
+
+
+# which category of item is available most 
+items_in_category = sales_data %>%
+  select(item_category_id, item_id) %>%
+  group_by(item_category_id) %>%
+  summarise(item_id =  n_distinct(item_id))
+
+ggplot(data = items_in_category,
+       mapping = aes(x = reorder(item_category_id,item_id),
+                     y = item_id,
+                     fill = factor(item_category_id)))+
+  geom_histogram(stat = "identity", color = "yellow") +
+  xlab(" Category ID")+ ylab(" Items in Category")+
+  ggtitle("Most Items per Category") +
+  coord_flip()+
+  theme(
+    # get rid of panel grids
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_line(colour = "gray",linetype = "dotted"),
+    # Change plot and panel background
+    plot.background=element_rect(fill = "black"),
+    panel.background = element_rect(fill = 'black'),
+    # Change legend 
+    # legend.position = c(0.6, 0.07),
+    # legend.direction = "horizontal",
+    legend.background = element_rect(fill = "black", color = NA),
+    legend.key = element_rect(color = "gray", fill = "black"),
+    legend.title = element_text(color = "white"),
+    legend.text = element_text(color = "white"),
+    # align title to top center, top ledt is by default.
+    plot.title = element_text(color = "white", hjust = 0.5, face = "bold"),
+    # axis ticks to bold black
+    axis.text=element_text(colour = "yellow",face = "bold"),
+    axis.title.x = element_text(color = "white"),
+    axis.title.y = element_text(color = "white")
+  ) 
